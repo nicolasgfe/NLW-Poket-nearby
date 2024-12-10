@@ -7,7 +7,7 @@ import { IconMapPin, IconQrcode, IconTicket } from "@tabler/icons-react-native";
 export function Steps() {
 	return (
 		<View style={s.container}>
-			<Text style={s.title}>Veja como fuinciona:</Text>
+			<Text style={s.title}>Veja como funciona:</Text>
 
 			<Step
 				icon={IconMapPin}
