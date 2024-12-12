@@ -12,11 +12,11 @@ export const s = StyleSheet.create({
 		justifyContent: "center",
 		flexDirection: "row",
 		paddingHorizontal: 12,
-		gap: 10,
+		gap: 10
 	},
 	name: {
-		fontSize:14,
-		color: colors.gray[500]	,
+		fontSize: 14,
+		color: colors.gray[500],
 		fontFamily: fontFamily.regular,
 	},
 	containerSelected: {

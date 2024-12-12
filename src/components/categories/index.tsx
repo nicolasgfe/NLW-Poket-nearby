@@ -4,25 +4,34 @@ import { s } from "./styles";
 
 export type CategoryProps = {
 	id: string;
-	name: string
+	name: string;
 }[]
 
 type Props = {
-	data: CategoryProps
+	data: CategoryProps;
+	selected: string;
+	onSelect: (id: string) => void;
 }
 
 
-export function Categories({ data }: Props) {
-	
+export function Categories({ data, selected, onSelect }: Props) {
+
 	return (
-		<FlatList 
-		data={data}
-		keyExtractor={(item) => item.id}
-		renderItem={({item}) => <Category iconId={item.id} name={item.name}/>}
-		horizontal
-		showsHorizontalScrollIndicator={false}
-		contentContainerStyle={s.content}
-		style={s.content}
+		<FlatList
+			data={data}
+			keyExtractor={(item) => item.id}
+			renderItem={({ item }) =>
+				<Category
+					iconId={item.id}
+					name={item.name}
+					onPress={() => onSelect(item.id)}
+					isSelected={item.id === selected}
+				/>
+			}
+			horizontal
+			showsHorizontalScrollIndicator={false}
+			contentContainerStyle={s.content}
+			style={s.container}
 		/>
 	)
 }
