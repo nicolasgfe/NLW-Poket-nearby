@@ -17,6 +17,7 @@ export default function Market() {
 	const [coupon, setCoupon] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isVisibleCameraModal, setIsVisibleCameraModal] = useState(false);
+	const [couponIsFetching, setCouponIsFetching] = useState(false);
 
 	const [_, requestPermission] = useCameraPermissions();
 
@@ -55,6 +56,21 @@ export default function Market() {
 		}
 	}
 
+	async function getCoupon(id: string) {
+		try {
+			setCouponIsFetching(true);
+			const { data } = await api.patch("/coupons/" + id)
+			Alert.alert("Cupom", data.coupon)
+			setCoupon(data.coupon)
+
+		} catch (error) {
+			console.log(error);
+			Alert.alert("Erro", "Não foi possível utilizar o cupom")
+		} finally {
+			setCouponIsFetching(false);
+		}
+	}
+
 
 	useEffect(() => {
 		fetchMarket()
@@ -79,10 +95,17 @@ export default function Market() {
 				</Button>
 			</View>
 			<Modal style={{ flex: 1 }} visible={isVisibleCameraModal}>
-				<CameraView style={{ flex: 1 }} />
+				<CameraView 
+				style={{ flex: 1 }}
+				facing="back"
+				onBarcodeScanned={({data}) => console.log(data)}
+				 />
 
-				<View style={{ position: "absolute", bottom: 32, left: 32, right:32 }}>
-					<Button onPress={() => setIsVisibleCameraModal(false)}>
+				<View style={{ position: "absolute", bottom: 32, left: 32, right: 32 }}>
+					<Button
+						onPress={() => setIsVisibleCameraModal(false)}
+						isLoading={couponIsFetching}
+					>
 						<Button.Title>Voltar</Button.Title>
 					</Button>
 				</View>
