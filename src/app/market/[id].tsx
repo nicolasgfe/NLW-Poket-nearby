@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, Modal, View } from "react-native";
+import { Alert, Modal, View, StatusBar, ScrollView } from "react-native";
 import { router, useLocalSearchParams, Redirect } from "expo-router";
 import { api } from "@/services/api";
 import { Loading } from "@/components/loading";
@@ -77,8 +77,8 @@ export default function Market() {
 	function handleUseCoupon(id: string) {
 		setIsVisibleCameraModal(false)
 		Alert.alert("cupom", "Não é possível utilizar um cupom resgatado. Deseja realmente resgatar o cupom?", [
-			{style: "cancel", text: "Não"},
-			{text: "Sim",onPress:  () => getCoupon(id)}
+			{ style: "cancel", text: "Não" },
+			{ text: "Sim", onPress: () => getCoupon(id) }
 		])
 	}
 
@@ -96,9 +96,13 @@ export default function Market() {
 
 	return (
 		<View style={{ flex: 1 }}>
-			<Cover uri={data.cover} />
-			<Details data={data} />
-			{coupon && <Coupon code={coupon} />}
+			<StatusBar barStyle="light-content" hidden={isVisibleCameraModal} />
+
+			<ScrollView showsVerticalScrollIndicator={false}>
+				<Cover uri={data.cover} />
+				<Details data={data} />
+				{coupon && <Coupon code={coupon} />}
+			</ScrollView>
 
 			<View style={{ padding: 32 }}>
 				<Button onPress={handleOpenCamera}>
@@ -106,19 +110,19 @@ export default function Market() {
 				</Button>
 			</View>
 			<Modal style={{ flex: 1 }} visible={isVisibleCameraModal}>
-				<CameraView 
-				style={{ flex: 1 }}
-				facing="back"
-				onBarcodeScanned={({data}) => {
-					if (data && !qrLock.current) {
-						qrLock.current = true;
-						setTimeout(() => {
-							handleUseCoupon(data);
-						}, 500);
-						
-					}
-				}}
-				 />
+				<CameraView
+					style={{ flex: 1 }}
+					facing="back"
+					onBarcodeScanned={({ data }) => {
+						if (data && !qrLock.current) {
+							qrLock.current = true;
+							setTimeout(() => {
+								handleUseCoupon(data);
+							}, 500);
+
+						}
+					}}
+				/>
 
 				<View style={{ position: "absolute", bottom: 32, left: 32, right: 32 }}>
 					<Button
