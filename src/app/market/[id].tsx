@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert, Modal, View } from "react-native";
 import { router, useLocalSearchParams, Redirect } from "expo-router";
 import { api } from "@/services/api";
@@ -22,6 +22,8 @@ export default function Market() {
 	const [_, requestPermission] = useCameraPermissions();
 
 	const params = useLocalSearchParams<{ id: string }>();
+
+	const qrLock = useRef(false)
 
 	async function fetchMarket() {
 		try {
@@ -49,6 +51,7 @@ export default function Market() {
 			if (!granted) {
 				return Alert.alert("Câmera", "Você precisa habilitar o uso da câmera")
 			}
+			qrLock.current = false;
 			setIsVisibleCameraModal(true)
 		} catch (error) {
 			console.log(error);
@@ -71,10 +74,18 @@ export default function Market() {
 		}
 	}
 
+	function handleUseCoupon(id: string) {
+		setIsVisibleCameraModal(false)
+		Alert.alert("cupom", "Não é possível utilizar um cupom resgatado. Deseja realmente resgatar o cupom?", [
+			{style: "cancel", text: "Não"},
+			{text: "Sim",onPress:  () => getCoupon(id)}
+		])
+	}
+
 
 	useEffect(() => {
 		fetchMarket()
-	}, [params.id])
+	}, [params.id, coupon])
 
 	if (isLoading) {
 		return <Loading />
@@ -98,7 +109,15 @@ export default function Market() {
 				<CameraView 
 				style={{ flex: 1 }}
 				facing="back"
-				onBarcodeScanned={({data}) => console.log(data)}
+				onBarcodeScanned={({data}) => {
+					if (data && !qrLock.current) {
+						qrLock.current = true;
+						setTimeout(() => {
+							handleUseCoupon(data);
+						}, 500);
+						
+					}
+				}}
 				 />
 
 				<View style={{ position: "absolute", bottom: 32, left: 32, right: 32 }}>
